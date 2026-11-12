@@ -47,16 +47,14 @@ def preprocess_image(image: Image.Image) -> tuple[np.ndarray, np.ndarray]:
         y0, x0 = coords.min(axis=0)
         y1, x1 = coords.max(axis=0) + 1
         cropped = img_array[y0:y1, x0:x1]
+        h, w = cropped.shape
 
         # Add a ~20% margin around the longest side
-        size = int(max(cropped.shape) * 1.4)
+        size = int(max(h, w) * 1.4)
         padded = np.zeros((size, size), dtype=np.float32)
-        y_offset = (size - cropped.shape) // 2
-        x_offset = (size - cropped.shape) // 2
-        padded[
-            y_offset : y_offset + cropped.shape,
-            x_offset : x_offset + cropped.shape,
-        ] = cropped
+        y_offset = (size - h) // 2
+        x_offset = (size - w) // 2
+        padded[y_offset : y_offset + h, x_offset : x_offset + w] = cropped
         img_array = padded
 
     # 4. Resize to 8x8 and normalize again after resampling
